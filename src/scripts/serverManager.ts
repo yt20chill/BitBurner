@@ -26,49 +26,49 @@ export async function main(ns: NS) {
   while (RAM <= ns.getServerMaxRam(servers[0] ?? 'home')) {
     ns.printf('Checking for servers with %s RAM.', ns.formatRam(RAM));
     for (let i = 0; i < ns.getPurchasedServerLimit(); i++) {
-      let server = 'server-' + i;
-      if (servers.includes(server)) {
-        // If server exists, check if it needs an upgrade.
-        if (ns.getServerMaxRam(server) < RAM) {
-          let cost = ns.getPurchasedServerUpgradeCost(server, RAM);
-          // Wait for sufficient funds for the upgrade.
-          while (ns.getServerMoneyAvailable('home') < cost) {
-            ns.printf(
-              '%s needs %s to upgrade to %s.',
-              server,
-              ns.formatNumber(cost),
-              ns.formatRam(RAM)
-            );
-            await ns.sleep(LOOP_DELAY);
-          }
-          // Upgrade the server when funds are sufficient.
-          if (ns.upgradePurchasedServer(server, RAM)) {
-            ns.printf('%s upgraded to %s', server, ns.formatRam(RAM));
-            servers = ns.getPurchasedServers(); // Refresh the server list.
-          }
-        }
-      } else {
-        // If server does not exist, check cost and attempt to purchase.
-        let cost = ns.getPurchasedServerCost(RAM);
-        while (ns.getServerMoneyAvailable('home') < cost) {
-          ns.printf(
-            'Need %s to purchase %s with %s',
-            ns.formatNumber(cost),
-            server,
-            ns.formatRam(RAM)
-          );
-          await ns.sleep(LOOP_DELAY);
-        }
-        if (ns.purchaseServer(server, RAM)) {
-          ns.printf('Purchased %s with %s', server, ns.formatRam(RAM));
-          servers = ns.getPurchasedServers(); // Refresh the server list.
-        }
+      const server = 'server-' + i;
+      if (!servers.includes(server)) {
+        servers =
+          (await purchaseServer(ns, server, RAM, LOOP_DELAY)) ?? servers;
+      } else if (ns.getServerMaxRam(server) < RAM) {
+        servers = (await upgradeServer(ns, server, RAM, LOOP_DELAY)) ?? servers;
       }
+      // Double the RAM requirement for the next loop iteration.
+      RAM *= 2;
+      // Pause the script briefly after handling all servers.
+      await ns.sleep(CALCULATION_DELAY);
     }
-    // Double the RAM requirement for the next loop iteration.
-    RAM *= 2;
-    // Pause the script briefly after handling all servers.
-    await ns.sleep(CALCULATION_DELAY);
+    ns.print('INFO: All servers has reached max RAM.');
   }
-  ns.print('INFO: All servers has reached max RAM.');
+
+  async function waitForFunds(ns: NS, cost: number, delay: number) {
+    while (ns.getServerMoneyAvailable('home') < cost) {
+      ns.print(`Need ${ns.formatNumber(cost)} to upgrade.`);
+      await ns.sleep(delay);
+    }
+  }
+
+  async function upgradeServer(
+    ns: NS,
+    server: string,
+    ram: number,
+    delay: number = 1000
+  ) {
+    const cost = ns.getPurchasedServerUpgradeCost(server, ram);
+    await waitForFunds(ns, cost, delay);
+    return ns.upgradePurchasedServer(server, ram)
+      ? ns.getPurchasedServers()
+      : null;
+  }
+
+  async function purchaseServer(
+    ns: NS,
+    server: string,
+    ram: number,
+    delay: number = 1000
+  ) {
+    const cost = ns.getPurchasedServerCost(ram);
+    await waitForFunds(ns, cost, delay);
+    return ns.purchaseServer(server, ram) ? ns.getPurchasedServers() : null;
+  }
 }
