@@ -8,7 +8,7 @@ export class FileSystem<T = unknown> {
    * Creates a new file or clears an existing one.
    */
   async newFile() {
-    await this.write('' as T, 'w');
+    await this.write('' as any as T, 'w');
   }
 
   async write(data: T, mode: 'w' | 'a' = 'w') {
