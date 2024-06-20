@@ -56,13 +56,13 @@ export class ServerNode {
   ) {}
 
   toJSON() {
-    return JSON.stringify({
+    return {
       name: this._name,
       parent: this._parent?._name ?? null,
       depth: this.depth,
       path: this.path,
       info: this.info,
-    });
+    };
   }
 
   private getPath() {
