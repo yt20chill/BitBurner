@@ -1,5 +1,5 @@
 import { NS } from '@ns';
-import { GameFiles } from '../../../data/FilePaths';
+import { GameFiles } from '/data/FilePaths';
 
 /**
  * Executes a loop that periodically runs a set of scripts to manage various aspects of a game environment.
