@@ -7,20 +7,24 @@ export class FileSystem<T = unknown> {
   /**
    * Creates a new file or clears an existing one.
    */
-  async newFile() {
+  public async newFile() {
     await this.write('' as any as T, 'w');
   }
 
-  async write(data: T, mode: 'w' | 'a' = 'w') {
-    const formattedData = JSON.stringify(data);
-    return await promisify(this.ns.write, this.filepath, formattedData, mode);
+  public async write(data: T, mode: 'w' | 'a' = 'w') {
+    return await promisify(
+      this.ns.write,
+      this.filepath,
+      JSON.stringify(data),
+      mode
+    );
   }
 
   /**
    * Reads data from the file and parses it from JSON.
    */
-  async read(): Promise<T | null> {
-    let dataString = await promisify(this.ns.read, this.filepath);
-    return dataString.length > 0 ? JSON.parse(dataString) : null;
+  public async read(): Promise<T | null> {
+    const str = await promisify(this.ns.read, this.filepath);
+    return str.length > 0 ? JSON.parse(str) : null;
   }
 }
