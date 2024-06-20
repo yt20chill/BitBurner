@@ -1,7 +1,8 @@
 import { NS } from '@ns';
 import { FilePaths } from 'data/FilePaths';
-import { ServerNodeDto } from 'data/ServerNode';
 import { FileSystem } from 'scripts/utils/fsUtils';
+import { ServerNodeDto } from '/data/ServerNode';
+import { assert } from '/scripts/utils/utils';
 /**
  * Evaluates a list of hackable servers and identifies the most profitable target
  * for hacking activities, based on a scoring system. The script reads a list of previously identified
@@ -24,6 +25,7 @@ export async function main(ns: NS) {
 
   const MAX_MINUTES = 30;
   // Read the list of hackable targets from the file.
+
   const TARGETS = (await hackableTargetsFile.read())?.filter(
     ({ name }) => !hasLongWeakenTime(ns, name, 1000 * 60 * MAX_MINUTES)
   );
