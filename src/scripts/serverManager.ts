@@ -1,4 +1,5 @@
 import { NS } from '@ns';
+import { purchaseServer, upgradeServer } from '/scripts/utils/resourcesUtils';
 
 /**
  * Manages the upgrade and acquisition of servers based on their RAM capacity in a game environment.
@@ -23,52 +24,21 @@ export async function main(ns: NS) {
   let servers = ns.getPurchasedServers(); // Get a list of currently owned servers.
 
   // Continuously evaluate and manage servers.
-  while (RAM <= ns.getServerMaxRam(servers[0] ?? 'home')) {
+  while (RAM <= ns.getPurchasedServerMaxRam()) {
     ns.printf('Checking for servers with %s RAM.', ns.formatRam(RAM));
     for (let i = 0; i < ns.getPurchasedServerLimit(); i++) {
       const server = 'server-' + i;
       if (!servers.includes(server)) {
-        servers =
-          (await purchaseServer(ns, server, RAM, LOOP_DELAY)) ?? servers;
+        await purchaseServer(ns, server, RAM, LOOP_DELAY);
       } else if (ns.getServerMaxRam(server) < RAM) {
-        servers = (await upgradeServer(ns, server, RAM, LOOP_DELAY)) ?? servers;
+        await upgradeServer(ns, server, RAM, LOOP_DELAY);
       }
+      servers = ns.getPurchasedServers();
       // Double the RAM requirement for the next loop iteration.
       RAM *= 2;
       // Pause the script briefly after handling all servers.
       await ns.sleep(CALCULATION_DELAY);
     }
     ns.print('INFO: All servers has reached max RAM.');
-  }
-
-  async function waitForFunds(ns: NS, cost: number, delay: number) {
-    while (ns.getServerMoneyAvailable('home') < cost) {
-      ns.print(`Need ${ns.formatNumber(cost)} to upgrade.`);
-      await ns.sleep(delay);
-    }
-  }
-
-  async function upgradeServer(
-    ns: NS,
-    server: string,
-    ram: number,
-    delay: number = 1000
-  ) {
-    const cost = ns.getPurchasedServerUpgradeCost(server, ram);
-    await waitForFunds(ns, cost, delay);
-    return ns.upgradePurchasedServer(server, ram)
-      ? ns.getPurchasedServers()
-      : null;
-  }
-
-  async function purchaseServer(
-    ns: NS,
-    server: string,
-    ram: number,
-    delay: number = 1000
-  ) {
-    const cost = ns.getPurchasedServerCost(ram);
-    await waitForFunds(ns, cost, delay);
-    return ns.purchaseServer(server, ram) ? ns.getPurchasedServers() : null;
   }
 }
