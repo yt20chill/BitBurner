@@ -23,7 +23,7 @@ export async function main(ns: NS) {
   let servers = ns.getPurchasedServers(); // Get a list of currently owned servers.
 
   // Continuously evaluate and manage servers.
-  while (RAM <= ns.getServerMaxRam(servers[0])) {
+  while (RAM <= ns.getServerMaxRam(servers[0] ?? 'home')) {
     ns.printf('Checking for servers with %s RAM.', ns.formatRam(RAM));
     for (let i = 0; i < ns.getPurchasedServerLimit(); i++) {
       let server = 'server-' + i;
