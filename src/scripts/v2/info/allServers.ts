@@ -1,14 +1,15 @@
 import { NS } from '@ns';
 import { FilePaths } from 'data/FilePaths';
-import { ServerNode } from 'data/ServerNode';
+import { ServerNode, ServerNodeDto } from 'data/ServerNode';
 import { FileSystem } from 'scripts/utils/fsUtils';
 
 export async function main(ns: NS) {
-  const ALL_SERVERS = new FileSystem(ns, FilePaths.ALL_SERVERS);
-  const servers = getAllServers(ns);
-  await ALL_SERVERS.write(
-    JSON.stringify(servers.map((server) => server.toJSON()))
+  const ALL_SERVERS = new FileSystem<ServerNodeDto[]>(
+    ns,
+    FilePaths.ALL_SERVERS
   );
+  const servers = getAllServers(ns);
+  await ALL_SERVERS.write(servers.map((server) => server.toJSON()));
   return;
 }
 
