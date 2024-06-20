@@ -1,8 +1,8 @@
 import { NS, Server } from '@ns';
 import { FilePaths } from 'data/FilePaths';
+import { ServerNode } from 'data/ServerNode';
 import { FileSystem } from 'scripts/utils/fsUtils';
 import { getAllServers } from 'scripts/v2/info/allServers';
-import { ServerNode } from '/data/ServerNode';
 /**
  * Identifies servers that are hackable based on their security and economic attributes,
  * and records their names, sorted by potential profitability. This script first gathers all accessible servers,

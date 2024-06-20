@@ -1,8 +1,8 @@
 import { NS } from '@ns';
 import { FilePaths } from 'data/FilePaths';
+import { ServerNodeDto } from 'data/ServerNode';
 import { FileSystem } from 'scripts/utils/fsUtils';
-import { ServerNodeDto } from '/data/ServerNode';
-import { assert } from '/scripts/utils/utils';
+import { assert } from 'scripts/utils/utils';
 /**
  * Evaluates a list of hackable servers and identifies the most profitable target
  * for hacking activities, based on a scoring system. The script reads a list of previously identified

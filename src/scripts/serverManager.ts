@@ -1,5 +1,5 @@
 import { NS } from '@ns';
-import { purchaseServer, upgradeServer } from '/scripts/utils/resourcesUtils';
+import { purchaseServer, upgradeServer } from 'scripts/utils/resourcesUtils';
 
 /**
  * Manages the upgrade and acquisition of servers based on their RAM capacity in a game environment.

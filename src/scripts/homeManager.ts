@@ -1,5 +1,5 @@
 import { NS } from '@ns';
-import { upgradeServer } from '/scripts/utils/resourcesUtils';
+import { upgradeServer } from 'scripts/utils/resourcesUtils';
 
 export async function main(ns: NS) {
   // Disable verbose logging for specific methods to clean up the output.
